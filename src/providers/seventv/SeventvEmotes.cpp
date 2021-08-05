@@ -55,8 +55,11 @@ namespace {
                                       .toObject()
                                       .value("display_name")
                                       .toString()};
-        int visibility = jsonEmote.toObject().value("visibility").toInt();
-        bool zeroWidth = (visibility & 128) == 128;
+        int64_t visibility = jsonEmote.toObject().value("visibility").toInt();
+        auto visibilityFlags =
+            SeventvEmoteVisibilityFlags(SeventvEmoteVisibilityFlag(visibility));
+        bool zeroWidth =
+            visibilityFlags.has(SeventvEmoteVisibilityFlag::ZeroWidth);
 
         auto emote = Emote(
             {name,
