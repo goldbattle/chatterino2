@@ -23,9 +23,6 @@ enum class SeventvEmoteVisibilityFlag : int64_t {
     OverrideTwitchSubscriber = (1LL << 6),
 
     ZeroWidth = (1LL << 7),
-
-    All = Private | Global | Unlisted | OverrideBttv | OverrideFfz |
-          OverrideTwitchGlobal | OverrideTwitchSubscriber | ZeroWidth,
 };
 
 using SeventvEmoteVisibilityFlags = FlagsEnum<SeventvEmoteVisibilityFlag>;
