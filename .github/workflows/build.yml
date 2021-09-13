@@ -15,7 +15,8 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
         qt-version: [5.15.2, 5.12.10]
-        build-system: [qmake, cmake]
+        # build-system: [qmake, cmake]
+        build-system: [qmake]
         exclude:
           - os: windows-latest
             qt-version: 5.12.10

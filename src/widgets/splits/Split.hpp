@@ -54,6 +54,8 @@ public:
     ChannelPtr getChannel();
     void setChannel(IndirectChannel newChannel);
 
+    void openInWebviewIfLive();
+
     void setFilters(const QList<QUuid> ids);
     const QList<QUuid> getFilters() const;
 
@@ -163,7 +165,6 @@ public slots:
     void popup();
     void clear();
     void openInWebview();
-    void openInWebviewIfLive();
     void openInBrowser();
     void openModViewInBrowser();
     void openWhispersInBrowser();
