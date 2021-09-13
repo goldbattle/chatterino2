@@ -91,6 +91,7 @@ CONFIG(debug, debug|release) {
 include(lib/warnings.pri)
 include(lib/libcommuni.pri)
 include(lib/websocketpp.pri)
+include(lib/webview.pri)
 include(lib/wintoast.pri)
 include(lib/signals.pri)
 include(lib/settings.pri)
