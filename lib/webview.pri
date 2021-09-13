@@ -11,7 +11,16 @@ win32 {
 #    LIBS += $$PWD/webview/dll/x64/WebView2Loader.dll
 #    LIBS += $$PWD/webview/dll/x64/webview.dll
 
-} else {
+}
+
+macx {
+
+    LIBS += -framework WebKit
+    PKGCONFIG += gtk+-3.0 webkit2gtk-4.0
+
+}
+
+linux {
 
     PKGCONFIG += gtk+-3.0 webkit2gtk-4.0
 
