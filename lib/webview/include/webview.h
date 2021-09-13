@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  * MIT License
  *
@@ -116,6 +114,7 @@ WEBVIEW_API void webview_return(webview_t w, const char *seq, int status,
 #endif
 
 #ifndef WEBVIEW_HEADER
+#define WEBVIEW_HEADER
 
 #if !defined(WEBVIEW_GTK) && !defined(WEBVIEW_COCOA) && !defined(WEBVIEW_EDGE)
 #if defined(__linux__)

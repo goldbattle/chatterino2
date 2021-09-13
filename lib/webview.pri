@@ -16,7 +16,7 @@ win32 {
 macx {
 
     LIBS += -framework WebKit
-    PKGCONFIG += gtk+-3.0 webkit2gtk-4.0
+#    PKGCONFIG += gtk+-3.0 webkit2gtk-4.0
 
 }
 

@@ -36,9 +36,13 @@ private:
     void operator=(WebviewPlayer const &);
 
     QString lastChannelChange = "";
+    QString lastChannelRequest = "";
     std::shared_ptr<std::thread> thread = nullptr;
-    std::shared_ptr<webview::webview> webview = nullptr;
+    webview_t webview = NULL;
     bool thread_done = true;
+
+    // callback function which will run on webkit ui thread
+    static void callbackUpdateStreamInWebview(webview_t w, void *arg);
 };
 
 }  // namespace chatterino
