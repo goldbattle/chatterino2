@@ -297,6 +297,8 @@ set(SOURCE_FILES
         util/StreamerMode.hpp
         util/Twitch.cpp
         util/Twitch.hpp
+        util/WebviewPlayer.cpp
+        util/WebviewPlayer.hpp
         util/WindowsHelper.cpp
         util/WindowsHelper.hpp
 
