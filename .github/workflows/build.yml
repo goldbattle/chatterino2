@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - test-webview-linking
   pull_request:
 
 jobs:
