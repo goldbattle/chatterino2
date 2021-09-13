@@ -298,6 +298,12 @@ void SplitContainer::setSelected(Split *split)
         this->focusSplitRecursive(node);
         this->setPreferedTargetRecursive(node);
     }
+
+    // switch the live stream if we have it enabled
+    if (getSettings()->webviewFollowStream)
+    {
+        split->openInWebviewIfLive();
+    }
 }
 
 void SplitContainer::setPreferedTargetRecursive(Node *node)

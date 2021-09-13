@@ -677,6 +677,8 @@ void GeneralPage::initLayout(GeneralPageView &layout)
     layout.addCheckbox("Combine multiple bit tips into one", s.stackBits);
     layout.addCheckbox("Messages in /mentions highlights tab",
                        s.highlightMentions);
+    layout.addCheckbox("Stream view follows active live channel split",
+                       s.webviewFollowStream);
 
     layout.addStretch();
 

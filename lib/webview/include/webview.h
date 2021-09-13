@@ -1,3 +1,5 @@
+#pragma once
+
 /*
  * MIT License
  *
@@ -24,8 +26,10 @@
 #ifndef WEBVIEW_H
 #define WEBVIEW_H
 
+// Appended inline here to prevent multiple function declarations
+// https://github.com/webview/webview/issues/378
 #ifndef WEBVIEW_API
-#define WEBVIEW_API extern
+#define WEBVIEW_API extern inline
 #endif
 
 #ifdef __cplusplus
@@ -812,6 +816,15 @@ using browser_engine = cocoa_wkwebview_engine;
 #include "webview2.h"
 #pragma comment(lib, "ole32.lib")
 #pragma comment(lib, "oleaut32.lib")
+
+// Windows sucks, their macros break c++ std...
+// https://stackoverflow.com/q/1394132/7718197
+#ifdef min
+#undef min
+#endif //min
+#ifdef max
+#undef max
+#endif //max
 
 namespace webview {
 

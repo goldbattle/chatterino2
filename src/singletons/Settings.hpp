@@ -376,6 +376,8 @@ public:
     BoolSetting informOnTabVisibilityToggle = {"/misc/askOnTabVisibilityToggle",
                                                true};
 
+    BoolSetting webviewFollowStream = {"/misc/webview/followStream", true};
+
     /// Debug
     BoolSetting showUnhandledIrcMessages = {"/debug/showUnhandledIrcMessages",
                                             false};

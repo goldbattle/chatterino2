@@ -256,6 +256,7 @@ SOURCES += \
     src/util/StreamerMode.cpp \
     src/util/StreamLink.cpp \
     src/util/Twitch.cpp \
+    src/util/WebviewPlayer.cpp \
     src/util/WindowsHelper.cpp \
     src/widgets/AccountSwitchPopup.cpp \
     src/widgets/AccountSwitchWidget.cpp \
@@ -518,6 +519,7 @@ HEADERS += \
     src/util/StreamerMode.hpp \
     src/util/StreamLink.hpp \
     src/util/Twitch.hpp \
+    src/util/WebviewPlayer.hpp \
     src/util/WindowsHelper.hpp \
     src/widgets/AccountSwitchPopup.hpp \
     src/widgets/AccountSwitchWidget.hpp \

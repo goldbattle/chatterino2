@@ -637,10 +637,34 @@ void Split::clear()
     this->view_->clearMessages();
 }
 
+void Split::openInWebview()
+{
+    auto channel = this->getChannel();
+    if (auto twitchChannel = dynamic_cast<TwitchChannel *>(channel.get()))
+    {
+        WebviewPlayer::getInstance().updateWebviewProcess(
+            twitchChannel->getName());
+    }
+}
+
+void Split::openInWebviewIfLive()
+{
+    auto channel = this->getChannel();
+    if (auto twitchChannel = dynamic_cast<TwitchChannel *>(channel.get()))
+    {
+        // if the webview is active and this channel is live, then we should switch!
+        if (!WebviewPlayer::getInstance().getIfWebviewHidden() &&
+            this->getChannel()->isLive())
+        {
+            WebviewPlayer::getInstance().updateWebviewProcess(
+                twitchChannel->getName());
+        }
+    }
+}
+
 void Split::openInBrowser()
 {
     auto channel = this->getChannel();
-
     if (auto twitchChannel = dynamic_cast<TwitchChannel *>(channel.get()))
     {
         QDesktopServices::openUrl("https://twitch.tv/" +

@@ -4,6 +4,7 @@
 #include "common/Channel.hpp"
 #include "common/NullablePtr.hpp"
 #include "pajlada/signals/signalholder.hpp"
+#include "util/WebviewPlayer.hpp"
 #include "widgets/BaseWidget.hpp"
 
 #include <QFont>
@@ -161,6 +162,8 @@ public slots:
     void explainSplitting();
     void popup();
     void clear();
+    void openInWebview();
+    void openInWebviewIfLive();
     void openInBrowser();
     void openModViewInBrowser();
     void openWhispersInBrowser();
