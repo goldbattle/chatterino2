@@ -59,10 +59,10 @@ public:
     ~QColorPicker();
     void setCrossVisible(bool visible);
 
-public slots:
+public Q_SLOTS:
     void setCol(int h, int s);
 
-signals:
+Q_SIGNALS:
     void newCol(int h, int s);
 
 protected:
@@ -93,11 +93,11 @@ public:
     QColorLuminancePicker(QWidget *parent = 0);
     ~QColorLuminancePicker();
 
-public slots:
+public Q_SLOTS:
     void setCol(int h, int s, int v);
     void setCol(int h, int s);
 
-signals:
+Q_SIGNALS:
     void newHsv(int h, int s, int v);
 
 protected:

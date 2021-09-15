@@ -2,6 +2,10 @@
 
 INCLUDEPATH += $$PWD/webview/include/
 
+# it seems that gtk has issues with QT's slot and signal macros
+# thus this should disable those macros...
+DEFINES += QT_NO_SIGNALS_SLOTS_KEYWORDS=1
+
 win32 {
 
     INCLUDEPATH += $$PWD/webview/microsoft.web.webview2.1.0.664.37/build/native/include/
@@ -22,6 +26,8 @@ macx {
 
 linux {
 
+#    PKGCONFIG += pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.0
+    CONFIG += link_pkfconfig
     PKGCONFIG += gtk+-3.0 webkit2gtk-4.0
 
 }

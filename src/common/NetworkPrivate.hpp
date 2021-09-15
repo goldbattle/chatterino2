@@ -19,7 +19,7 @@ class NetworkRequester : public QObject
 {
     Q_OBJECT
 
-signals:
+Q_SIGNALS:
     void requestUrl();
 };
 
@@ -27,7 +27,7 @@ class NetworkWorker : public QObject
 {
     Q_OBJECT
 
-signals:
+Q_SIGNALS:
     void doneUrl();
 };
 

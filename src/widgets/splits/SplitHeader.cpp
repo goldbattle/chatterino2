@@ -369,7 +369,7 @@ std::unique_ptr<QMenu> SplitHeader::createMainMenu()
 
     if (twitchChannel)
     {
-        menu->addAction(OPEN_IN_WEBKIT, this->split_, &Split::openInWebview);
+        menu->addAction(OPEN_IN_WEBVIEW, this->split_, &Split::openInWebview);
         menu->addAction(OPEN_IN_BROWSER, this->split_, &Split::openInBrowser);
 #ifndef USEWEBENGINE
         menu->addAction(OPEN_PLAYER_IN_BROWSER, this->split_,

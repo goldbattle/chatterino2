@@ -37,7 +37,8 @@ private:
 
     QString lastChannelChange = "";
     QString lastChannelRequest = "";
-    std::shared_ptr<std::thread> thread = nullptr;
+    //std::shared_ptr<std::thread> thread = nullptr;
+    std::thread thread;
     webview_t webview = NULL;
     bool thread_done = true;
 

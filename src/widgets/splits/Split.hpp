@@ -156,7 +156,7 @@ private:
 
     std::vector<pajlada::Signals::ScopedConnection> managedConnections_;
 
-public slots:
+public Q_SLOTS:
     void addSibling();
     void deleteFromContainer();
     void changeChannel();

@@ -24,13 +24,13 @@ private:
     QNetworkReply *reply;
     QFile *file;
 
-private slots:
+private Q_SLOTS:
     void onDownloadProgress(qint64, qint64);
     void onFinished(QNetworkReply *);
     void onReadyRead();
     void onReplyFinished();
 
-signals:
+Q_SIGNALS:
     void downloadComplete();
 };
 }  // namespace chatterino

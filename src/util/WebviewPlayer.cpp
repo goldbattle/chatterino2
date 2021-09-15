@@ -4,7 +4,8 @@ namespace chatterino {
 
 bool WebviewPlayer::getIfWebviewHidden()
 {
-    return thread == NULL || webview == NULL || thread_done;
+    //return thread == NULL || webview == NULL || thread_done;
+    return thread_done;
 }
 
 void WebviewPlayer::updateWebviewProcess(const QString &channel)
@@ -14,14 +15,20 @@ void WebviewPlayer::updateWebviewProcess(const QString &channel)
     // TODO: we should be able to handle having multiple webviews for multi-stream!
     if (getIfWebviewHidden())
     {
+
+
         thread_done = false;
-        thread = std::make_shared<std::thread>([this, &channel]() {
+        //thread = std::make_shared<std::thread>([this, &channel]() {
+        thread = std::thread([this, &channel]() {
+
             // create the webview
             std::string title = "SV " + std::to_string(std::time(nullptr));
-            webview = webview_create(0, NULL);
-            webview_set_title(webview, title.c_str());
-            webview_set_size(webview, 480, 320, WEBVIEW_HINT_NONE);
-            webview_set_size(webview, 480, 320, WEBVIEW_HINT_MIN);
+            webview_t webview2;
+            webview2 = webview_create(0, NULL);
+            //webview_set_title(webview2, title.c_str());
+            webview_set_title(webview2, "test");
+            webview_set_size(webview2, 480, 320, WEBVIEW_HINT_NONE);
+            webview_set_size(webview2, 480, 320, WEBVIEW_HINT_MIN);
 
             // Append script to auto maximize the stream on first load
             // This should run each time the page is refreshed
@@ -31,29 +38,29 @@ void WebviewPlayer::updateWebviewProcess(const QString &channel)
                              "document.body.querySelector('[data-a-target="
                              "\"player-theatre-mode-button\"]').click(); "
                              "window.has_inited = true; } }, 2500);";
-            webview_init(webview, js.c_str());
+            webview_init(webview2, js.c_str());
 
             // Then show the twitch stream to the user and the window
             lastChannelChange = channel;
             webview_navigate(
-                webview,
+                webview2,
                 ("https://www.twitch.tv/" + channel.toStdString()).c_str());
-            webview_run(webview);
+            webview_run(webview2);
 
             // for some reason there is no "destroy" c++ function..
-            webview_destroy(webview);
+            webview_destroy(webview2);
             webview = NULL;
             thread_done = true;
         });
-        thread->detach();
+        //thread.detach();
     }
     else
     {
         // Else just request the channel to change
         // We run this on the webview UI thread since the webview is async from our gui
         lastChannelRequest = channel;
-        webview_dispatch(webview, &WebviewPlayer::callbackUpdateStreamInWebview,
-                         NULL);
+        //webview_dispatch(webview, &WebviewPlayer::callbackUpdateStreamInWebview,
+         //                NULL);
     }
 }
 

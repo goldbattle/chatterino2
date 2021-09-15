@@ -72,7 +72,7 @@ private:
     QString currMsg_;
     int prevIndex_ = 0;
 
-private slots:
+private Q_SLOTS:
     void editTextChanged();
 
     friend class Split;

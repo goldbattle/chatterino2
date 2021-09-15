@@ -1,6 +1,6 @@
 #pragma once
 
-#define OPEN_IN_WEBKIT "Watch stream now (webkit)"
+#define OPEN_IN_WEBVIEW "Watch stream now (webview)"
 #define OPEN_IN_BROWSER "Open stream in browser"
 #define OPEN_PLAYER_IN_BROWSER "Open player in browser"
 #define OPEN_MOD_VIEW_IN_BROWSER "Open mod view in browser"

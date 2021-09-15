@@ -84,7 +84,7 @@ private:
     std::vector<pajlada::Signals::ScopedConnection> managedConnections_;
     std::vector<pajlada::Signals::ScopedConnection> channelConnections_;
 
-public slots:
+public Q_SLOTS:
     void reloadChannelEmotes();
     void reloadSubscriberEmotes();
     void reconnect();

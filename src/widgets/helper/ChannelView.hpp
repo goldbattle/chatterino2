@@ -246,7 +246,7 @@ private:
     static constexpr int leftPadding = 8;
     static constexpr int scrollbarPadding = 8;
 
-private slots:
+private Q_SLOTS:
     void wordFlagsChanged()
     {
         queueLayout();

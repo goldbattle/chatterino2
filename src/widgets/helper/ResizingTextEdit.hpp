@@ -43,7 +43,7 @@ private:
     QCompleter *completer_ = nullptr;
     bool completionInProgress_ = false;
 
-private slots:
+private Q_SLOTS:
     void insertCompletion(const QString &completion);
 };
 
