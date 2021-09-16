@@ -91,7 +91,7 @@ CONFIG(debug, debug|release) {
 include(lib/warnings.pri)
 include(lib/libcommuni.pri)
 include(lib/websocketpp.pri)
-include(lib/webview.pri)
+#include(lib/webview.pri)
 include(lib/wintoast.pri)
 include(lib/signals.pri)
 include(lib/settings.pri)
@@ -118,6 +118,10 @@ else{
 #    QT += webenginewidgets
 #    DEFINES += "USEWEBENGINE"
 #}
+
+# for our twitch livestream integration....
+#DEFINES += QT_NO_SIGNALS_SLOTS_KEYWORDS=1
+QT += webenginewidgets
 
 SOURCES += \
     src/Application.cpp \
