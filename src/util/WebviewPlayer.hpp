@@ -1,12 +1,11 @@
 #pragma once
 
+#include <QWindow>
 #include <QString>
 #include <memory>
 
-// header only library for webview
-// needs to be built with cpp files!
-// https://github.com/webview/webview
-#include "webview.h"
+#include <QApplication>
+#include <QWebEngineView>
 
 namespace chatterino {
 
@@ -36,14 +35,8 @@ private:
     void operator=(WebviewPlayer const &);
 
     QString lastChannelChange = "";
-    QString lastChannelRequest = "";
-    //std::shared_ptr<std::thread> thread = nullptr;
-    std::thread thread;
-    webview_t webview = NULL;
-    bool thread_done = true;
+    std::shared_ptr<QWebEngineView> view = nullptr;
 
-    // callback function which will run on webkit ui thread
-    static void callbackUpdateStreamInWebview(webview_t w, void *arg);
 };
 
 }  // namespace chatterino
