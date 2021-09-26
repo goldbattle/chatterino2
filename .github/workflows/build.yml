@@ -63,6 +63,7 @@ jobs:
           aqtversion: '==1.1.1'
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
           extra: --external 7z
+          modules: 'qtwebengine'
           version: ${{ matrix.qt-version }}
 
       # WINDOWS
