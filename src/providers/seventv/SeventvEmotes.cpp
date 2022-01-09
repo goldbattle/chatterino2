@@ -76,6 +76,7 @@ namespace {
     {
         auto emotes = EmoteMap();
 
+        // We always show all global emotes, no need to check visibility here
         for (const auto &jsonEmote : jsonEmotes)
         {
             auto emote = createEmote(jsonEmote, true);
@@ -96,8 +97,15 @@ namespace {
         {
             auto jsonEmote = jsonEmote_.toObject();
 
+            // Check our visibility of this emote
+            // https://github.com/SevenTV/Typings/blob/359948b421eb896c852278d67f33943f9fcbb3a6/typings/DataStructure.ts#L32-L46
+            // In binary we have HIDDEN == 1 << 2,
+            int visibility = jsonEmote.value("visibility").toInt();
+            if ((visibility & (1 << 2)) != 0)
+            {
+                continue;
+            }
             auto emote = createEmote(jsonEmote, false);
-
             emotes[emote.name] = cachedOrMake(std::move(emote.emote), emote.id);
         }
 
