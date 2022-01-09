@@ -311,6 +311,8 @@ void GeneralPage::initLayout(GeneralPageView &layout)
 
     layout.addCheckbox("Remove spaces between emotes",
                        s.removeSpacesBetweenEmotes);
+    layout.addCheckbox("Show unlisted / unapproved emotes (7TV only)",
+                       s.showUnlistedEmotes);
     layout.addDropdown<int>(
         "Show info on hover", {"Don't show", "Always show", "Hold shift"},
         s.emotesTooltipPreview,

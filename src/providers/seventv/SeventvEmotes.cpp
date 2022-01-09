@@ -8,6 +8,7 @@
 #include "messages/ImageSet.hpp"
 #include "messages/MessageBuilder.hpp"
 #include "providers/twitch/TwitchChannel.hpp"
+#include "singletons/Settings.hpp"
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -106,7 +107,7 @@ namespace {
     {
         auto emotes = EmoteMap();
 
-        for (auto jsonEmote_ : jsonEmotes)
+        for (const auto &jsonEmote_ : jsonEmotes)
         {
             auto jsonEmote = jsonEmote_.toObject();
 
@@ -114,7 +115,8 @@ namespace {
             int64_t visibility = jsonEmote.value("visibility").toInt();
             auto visibilityFlags = SeventvEmoteVisibilityFlags(
                 SeventvEmoteVisibilityFlag(visibility));
-            if (visibilityFlags.has(SeventvEmoteVisibilityFlag::Unlisted))
+            if (!getSettings()->showUnlistedEmotes &&
+                visibilityFlags.has(SeventvEmoteVisibilityFlag::Unlisted))
             {
                 continue;
             }
