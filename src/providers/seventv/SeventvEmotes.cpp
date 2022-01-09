@@ -163,7 +163,6 @@ void SeventvEmotes::loadEmotes()
                 this->global_.set(
                     std::make_shared<EmoteMap>(std::move(pair.second)));
             return pair.first;
-            return Failure;
         })
         .execute();
 }
