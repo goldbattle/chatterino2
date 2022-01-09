@@ -9,11 +9,14 @@ public:
     Resources2();
 
     struct {
+        QPixmap _1xelerate;
+        QPixmap alazymeme;
         QPixmap fourtf;
         QPixmap kararty;
         QPixmap mm2pl;
         QPixmap pajlada;
         QPixmap slch;
+        QPixmap xheaveny;
         QPixmap zneix;
     } avatars;
     struct {
@@ -21,6 +24,7 @@ public:
         QPixmap addSplitDark;
         QPixmap ban;
         QPixmap banRed;
+        QPixmap clearSearch;
         QPixmap copyDark;
         QPixmap copyLight;
         QPixmap menuDark;

@@ -93,7 +93,7 @@ AboutPage::AboutPage()
                                     version.commitHash() + "\">" +
                                     version.commitHash() + "</a>")
                                .arg(Modes::instance().isNightly
-                                        ? ", " + version.dateOfBuild()
+                                        ? ", built on " + version.dateOfBuild()
                                         : "");
 
             auto versionLabel = versionInfo.emplace<QLabel>(text);
@@ -109,7 +109,6 @@ AboutPage::AboutPage()
 
             // clang-format off
             l.emplace<QLabel>("Chatterino Wiki can be found <a href=\"" LINK_CHATTERINO_WIKI "\">here</a>")->setOpenExternalLinks(true);
-            l.emplace<QLabel>("Support <a href=\"" LINK_DONATE "\">Chatterino</a>")->setOpenExternalLinks(true);
             l.emplace<QLabel>("All about Chatterino's <a href=\"" LINK_CHATTERINO_FEATURES "\">features</a>")->setOpenExternalLinks(true);
             l.emplace<QLabel>("Join the official Chatterino <a href=\"" LINK_CHATTERINO_DISCORD "\">Discord</a>")->setOpenExternalLinks(true);
             // clang-format on
@@ -141,9 +140,11 @@ AboutPage::AboutPage()
             addLicense(form.getElement(), "Websocketpp",
                        "https://www.zaphoyd.com/websocketpp/",
                        ":/licenses/websocketpp.txt");
+#ifndef NO_QTKEYCHAIN
             addLicense(form.getElement(), "QtKeychain",
                        "https://github.com/frankosterfeld/qtkeychain",
                        ":/licenses/qtkeychain.txt");
+#endif
             addLicense(form.getElement(), "lrucache",
                        "https://github.com/lamerman/cpp-lru-cache",
                        ":/licenses/lrucache.txt");
@@ -161,7 +162,6 @@ AboutPage::AboutPage()
             l.emplace<QLabel>("Google emojis provided by <a href=\"https://google.com\">Google</a>")->setOpenExternalLinks(true);
             l.emplace<QLabel>("Emoji datasource provided by <a href=\"https://www.iamcal.com/\">Cal Henderson</a>"
                               "(<a href=\"https://github.com/iamcal/emoji-data/blob/master/LICENSE\">show license</a>)")->setOpenExternalLinks(true);
-            l.emplace<QLabel>("Twitch emote data provided by <a href=\"https://twitchemotes.com/\">twitchemotes.com</a> through the <a href=\"https://github.com/Chatterino/api\">Chatterino API</a>")->setOpenExternalLinks(true);
             // clang-format on
         }
 

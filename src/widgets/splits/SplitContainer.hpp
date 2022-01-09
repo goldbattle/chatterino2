@@ -29,7 +29,7 @@ class Notebook;
 // inside but it doesn't expose any of it publicly.
 //
 
-class SplitContainer final : public BaseWidget, pajlada::Signals::SignalHolder
+class SplitContainer final : public BaseWidget
 {
     Q_OBJECT
 
@@ -202,6 +202,8 @@ public:
 
     void applyFromDescriptor(const NodeDescriptor &rootNode);
 
+    void popup();
+
 protected:
     void paintEvent(QPaintEvent *event) override;
 
@@ -257,6 +259,8 @@ private:
 
     std::unordered_map<Split *, pajlada::Signals::SignalHolder>
         connectionsPerSplit_;
+
+    pajlada::Signals::SignalHolder signalHolder_;
 
     bool isDragging_ = false;
 };
