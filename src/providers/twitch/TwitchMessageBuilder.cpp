@@ -994,6 +994,10 @@ Outcome TwitchMessageBuilder::tryAppendEmote(const EmoteName &name)
              (emote = this->twitchChannel->seventvEmote(name)))
     {
         flags = MessageElementFlag::SeventvEmote;
+        if (emote.value()->zeroWidth)
+        {
+            flags.set(MessageElementFlag::ZeroWidthEmote);
+        }
     }
     else if (this->twitchChannel &&
              (emote = this->twitchChannel->bttvEmote(name)))
@@ -1003,6 +1007,10 @@ Outcome TwitchMessageBuilder::tryAppendEmote(const EmoteName &name)
     else if ((emote = globalSeventvEmotes.emote(name)))
     {
         flags = MessageElementFlag::SeventvEmote;
+        if (emote.value()->zeroWidth)
+        {
+            flags.set(MessageElementFlag::ZeroWidthEmote);
+        }
     }
     else if ((emote = globalFfzEmotes.emote(name)))
     {
