@@ -33,8 +33,6 @@ class EmoteMap;
 
 class SeventvEmotes final
 {
-    static constexpr const char *apiUrlGQL = "https://api.7tv.app/v2/gql";
-
 public:
     SeventvEmotes();
 
@@ -43,6 +41,7 @@ public:
     void loadEmotes();
     static void loadChannel(std::weak_ptr<Channel> channel,
                             const QString &channelId,
+                            const QString &channelDisplayName,
                             std::function<void(EmoteMap &&)> callback,
                             bool manualRefresh);
 

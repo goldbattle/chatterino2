@@ -24,12 +24,20 @@ namespace {
     // maximum pageSize that 7tv's API accepts
     constexpr int maxPageSize = 150;
 
-    Url getEmoteLink(const EmoteId &id, const QString &emoteScale)
+    Url getEmoteLink(const QJsonArray &jsonUrls, const QString &emoteScale)
 
     {
-        const QString urlTemplate("https://cdn.7tv.app/emote/%1/%2");
-
-        return {urlTemplate.arg(id.string, emoteScale)};
+        for (const auto &urlPair : jsonUrls)
+        {
+            // 7tv has its emotes in an array for some reason
+            // The first entry in the array is the scale, second is the url
+            auto urlArray = urlPair.toArray();
+            if (urlArray.size() == 2 && urlArray.at(0).toString() == emoteScale)
+            {
+                return {urlArray.at(1).toString()};
+            }
+        }
+        return {""};
     }
 
     EmotePtr cachedOrMake(Emote &&emote, const EmoteId &id)
@@ -61,12 +69,13 @@ namespace {
         bool zeroWidth =
             visibilityFlags.has(SeventvEmoteVisibilityFlag::ZeroWidth);
 
+        auto jsonUrls = jsonEmote.toObject().value("urls").toArray();
         auto emote = Emote(
             {name,
-             ImageSet{Image::fromUrl(getEmoteLink(id, "1x"), 1),
-                      Image::fromUrl(getEmoteLink(id, "2x"), 0.50),
-                      Image::fromUrl(getEmoteLink(id, "3x"), 0.286),
-                      Image::fromUrl(getEmoteLink(id, "4x"), 0.250)},
+             ImageSet{Image::fromUrl(getEmoteLink(jsonUrls, "1"), 1),
+                      Image::fromUrl(getEmoteLink(jsonUrls, "2"), 0.50),
+                      Image::fromUrl(getEmoteLink(jsonUrls, "3"), 0.286),
+                      Image::fromUrl(getEmoteLink(jsonUrls, "4"), 0.250)},
              Tooltip{QString("%1<br>%2 7TV Emote<br>By: %3")
                          .arg(name.string, (isGlobal ? "Global" : "Channel"),
                               author.string)},
@@ -92,12 +101,11 @@ namespace {
         return {Success, std::move(emotes)};
     }
 
-    EmoteMap parseChannelEmotes(const QJsonObject &root,
+    EmoteMap parseChannelEmotes(const QJsonArray &jsonEmotes,
                                 const QString &channelName)
     {
         auto emotes = EmoteMap();
 
-        auto jsonEmotes = root.value("emotes").toArray();
         for (auto jsonEmote_ : jsonEmotes)
         {
             auto jsonEmote = jsonEmote_.toObject();
@@ -140,114 +148,44 @@ boost::optional<EmotePtr> SeventvEmotes::emote(const EmoteName &name) const
 
 void SeventvEmotes::loadEmotes()
 {
-    qCDebug(chatterinoSeventv) << "Loading 7TV Emotes";
+    qCDebug(chatterinoSeventv) << "[7TVEmotes] Loading 7TV Global Emotes";
 
-    QJsonObject payload, variables;
+    QString url("https://api.7tv.app/v2/emotes/global");
 
-    QString query = R"(
-        query loadGlobalEmotes($query: String!, $globalState: String, $page: Int, $limit: Int, $pageSize: Int) {
-        search_emotes(query: $query, globalState: $globalState, page: $page, limit: $limit, pageSize: $pageSize) {
-            id
-            name
-            provider
-            provider_id
-            visibility
-            mime
-            owner {
-                id
-                display_name
-                login
-                twitch_id
-            }
-        }
-    })";
-
-    variables.insert("query", QString());
-    variables.insert("globalState", "only");
-    variables.insert("page", 1);  // TODO(zneix): Add support for pagination
-    variables.insert("limit", maxPageSize);
-    variables.insert("pageSize", maxPageSize);
-
-    payload.insert("query", query.replace(whitespaceRegex, " "));
-    payload.insert("variables", variables);
-
-    NetworkRequest(apiUrlGQL, NetworkRequestType::Post)
+    NetworkRequest(url)
         .timeout(30000)
-        .header("Content-Type", "application/json")
-        .payload(QJsonDocument(payload).toJson(QJsonDocument::Compact))
-        .onSuccess([this](NetworkResult result) -> Outcome {
-            QJsonArray parsedEmotes = result.parseJson()
-                                          .value("data")
-                                          .toObject()
-                                          .value("search_emotes")
-                                          .toArray();
-            qCDebug(chatterinoSeventv)
-                << "7TV Global Emotes" << parsedEmotes.size();
-
-            auto pair = parseGlobalEmotes(parsedEmotes, *this->global_.get());
+        .onSuccess([this](auto result) -> Outcome {
+            auto emotes = this->emotes();
+            auto pair = parseGlobalEmotes(result.parseJsonArray(), *emotes);
             if (pair.first)
                 this->global_.set(
                     std::make_shared<EmoteMap>(std::move(pair.second)));
             return pair.first;
+            return Failure;
         })
         .execute();
 }
 
 void SeventvEmotes::loadChannel(std::weak_ptr<Channel> channel,
                                 const QString &channelId,
+                                const QString &channelDisplayName,
                                 std::function<void(EmoteMap &&)> callback,
                                 bool manualRefresh)
 {
-    qCDebug(chatterinoSeventv)
-        << "Reloading 7TV Channel Emotes" << channelId << manualRefresh;
+    qCDebug(chatterinoSeventv) << "[7TVEmotes] Reloading 7TV Channel Emotes"
+                               << channelId << manualRefresh;
 
-    QJsonObject payload, variables;
-
-    QString query = R"(
-        query loadUserEmotes($login: String!) {
-            user(id: $login) {
-                emotes {
-                    id
-                    name
-                    provider
-                    provider_id
-                    visibility
-                    mime
-                    owner {
-                        id
-                        display_name
-                        login
-                        twitch_id
-                    }
-                }
-            }
-        })";
-
-    variables.insert("login", channelId);
-
-    payload.insert("query", query.replace(whitespaceRegex, " "));
-    payload.insert("variables", variables);
-
-    qDebug() << QJsonDocument(payload).toJson(QJsonDocument::Compact);
-
-    NetworkRequest(apiUrlGQL, NetworkRequestType::Post)
-        .timeout(20000)
-        .header("Content-Type", "application/json")
-        .payload(QJsonDocument(payload).toJson(QJsonDocument::Compact))
+    NetworkRequest("https://api.7tv.app/v2/users/" + channelDisplayName +
+                   "/emotes")
         .onSuccess([callback = std::move(callback), channel, channelId,
                     manualRefresh](NetworkResult result) -> Outcome {
-            QJsonObject parsedEmotes = result.parseJson()
-                                           .value("data")
-                                           .toObject()
-                                           .value("user")
-                                           .toObject();
-
-            auto emoteMap = parseChannelEmotes(parsedEmotes, channelId);
+            auto emoteMap =
+                parseChannelEmotes(result.parseJsonArray(), channelId);
             bool hasEmotes = !emoteMap.empty();
 
             qCDebug(chatterinoSeventv)
-                << "Loaded 7TV Channel Emotes" << channelId << emoteMap.size()
-                << manualRefresh;
+                << "[7TVEmotes] Loaded 7TV Channel Emotes" << channelId
+                << emoteMap.size() << manualRefresh;
 
             if (hasEmotes)
             {

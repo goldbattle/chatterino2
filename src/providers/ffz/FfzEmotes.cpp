@@ -186,7 +186,6 @@ void FfzEmotes::loadEmotes()
     QString url("https://api.frankerfacez.com/v1/set/global");
 
     NetworkRequest(url)
-
         .timeout(30000)
         .onSuccess([this](auto result) -> Outcome {
             auto emotes = this->emotes();
