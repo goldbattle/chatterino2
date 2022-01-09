@@ -102,11 +102,11 @@ namespace {
         {
             auto jsonEmote = jsonEmote_.toObject();
 
-            // Check our visibility of this emote
-            // https://github.com/SevenTV/Typings/blob/359948b421eb896c852278d67f33943f9fcbb3a6/typings/DataStructure.ts#L32-L46
-            // In binary we have HIDDEN == 1 << 2,
-            int visibility = jsonEmote.value("visibility").toInt();
-            if ((visibility & (1 << 2)) != 0)
+            // Check our visibility of this emote, don't display if unlisted
+            int64_t visibility = jsonEmote.value("visibility").toInt();
+            auto visibilityFlags = SeventvEmoteVisibilityFlags(
+                SeventvEmoteVisibilityFlag(visibility));
+            if (visibilityFlags.has(SeventvEmoteVisibilityFlag::Unlisted))
             {
                 continue;
             }
