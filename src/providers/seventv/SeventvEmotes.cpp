@@ -150,11 +150,9 @@ boost::optional<EmotePtr> SeventvEmotes::emote(const EmoteName &name) const
 
 void SeventvEmotes::loadEmotes()
 {
-    qCDebug(chatterinoSeventv) << "[7TVEmotes] Loading 7TV Global Emotes";
+    qCDebug(chatterinoSeventv) << "Loading 7TV Global Emotes";
 
-    QString url("https://api.7tv.app/v2/emotes/global");
-
-    NetworkRequest(url)
+    NetworkRequest("https://api.7tv.app/v2/emotes/global")
         .timeout(30000)
         .onSuccess([this](auto result) -> Outcome {
             auto emotes = this->emotes();
@@ -169,15 +167,14 @@ void SeventvEmotes::loadEmotes()
 
 void SeventvEmotes::loadChannel(std::weak_ptr<Channel> channel,
                                 const QString &channelId,
-                                const QString &channelDisplayName,
                                 std::function<void(EmoteMap &&)> callback,
                                 bool manualRefresh)
 {
-    qCDebug(chatterinoSeventv) << "[7TVEmotes] Reloading 7TV Channel Emotes"
-                               << channelId << manualRefresh;
+    qCDebug(chatterinoSeventv)
+        << "Reloading 7TV Channel Emotes" << channelId << manualRefresh;
 
-    NetworkRequest("https://api.7tv.app/v2/users/" + channelDisplayName +
-                   "/emotes")
+    const QString urlTemplate("https://api.7tv.app/v2/users/%1/emotes");
+    NetworkRequest(urlTemplate.arg(channelId))
         .onSuccess([callback = std::move(callback), channel, channelId,
                     manualRefresh](NetworkResult result) -> Outcome {
             auto emoteMap =
@@ -185,8 +182,8 @@ void SeventvEmotes::loadChannel(std::weak_ptr<Channel> channel,
             bool hasEmotes = !emoteMap.empty();
 
             qCDebug(chatterinoSeventv)
-                << "[7TVEmotes] Loaded 7TV Channel Emotes" << channelId
-                << emoteMap.size() << manualRefresh;
+                << "Loaded 7TV Channel Emotes" << channelId << emoteMap.size()
+                << manualRefresh;
 
             if (hasEmotes)
             {

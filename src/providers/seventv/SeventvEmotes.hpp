@@ -41,7 +41,6 @@ public:
     void loadEmotes();
     static void loadChannel(std::weak_ptr<Channel> channel,
                             const QString &channelId,
-                            const QString &channelDisplayName,
                             std::function<void(EmoteMap &&)> callback,
                             bool manualRefresh);
 
