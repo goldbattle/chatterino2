@@ -281,6 +281,8 @@ set(SOURCE_FILES
 
         util/AttachToConsole.cpp
         util/AttachToConsole.hpp
+        util/AttachedPlayer.cpp
+        util/AttachedPlayer.hpp
         util/Clipboard.cpp
         util/Clipboard.hpp
         util/DebugCount.cpp

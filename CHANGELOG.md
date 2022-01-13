@@ -2,6 +2,7 @@
 
 ## Unversioned
 
+- Major: Added attached video viewer which allows for watching of streams without leaving the app. Requires setting up Streamlink and MPV player. (#2854)
 - Major: Added customizable shortcuts. (#2340)
 - Minor: Added middle click split to open in browser (#3356)
 - Minor: Added new search predicate to filter for messages matching a regex (#3282)

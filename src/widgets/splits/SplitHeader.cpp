@@ -363,6 +363,10 @@ std::unique_ptr<QMenu> SplitHeader::createMainMenu()
         menu->addAction(OPEN_PLAYER_IN_BROWSER, this->split_,
                         &Split::openBrowserPlayer);
 #endif
+
+        menu->addAction(OPEN_IN_STREAMLINK_ATTACHED, this->split_,
+                        &Split::openInStreamlinkVLC);
+
         menu->addAction(OPEN_IN_STREAMLINK, this->split_,
                         &Split::openInStreamlink);
 

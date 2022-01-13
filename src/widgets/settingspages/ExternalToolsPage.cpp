@@ -41,7 +41,10 @@ ExternalToolsPage::ExternalToolsPage()
             " " +
             formatRichNamedLink(
                 "https://github.com/streamlink/streamlink/releases/latest",
-                "Download"));
+                "Download") +
+            " " +
+            formatRichNamedLink("https://streamlink.github.io/cli.html#twitch",
+                                "Documentation"));
         links->setTextFormat(Qt::RichText);
         links->setTextInteractionFlags(Qt::TextBrowserInteraction |
                                        Qt::LinksAccessibleByKeyboard |
@@ -65,6 +68,18 @@ ExternalToolsPage::ExternalToolsPage()
             "Preferred quality:",
             this->createComboBox({STREAMLINK_QUALITY},
                                  getSettings()->preferredQuality));
+
+        auto optionLatencyCb =
+            this->createCheckBox("Enables low latency streaming by prefetching "
+                                 "HLS segments (--twitch-low-latency)",
+                                 getSettings()->streamlinkOptsLatency);
+        groupLayout->setWidget(5, QFormLayout::SpanningRole, optionLatencyCb);
+
+        auto optionAdsCb = this->createCheckBox(
+            "Skip embedded advertisement segments (--twitch-disable-ads)",
+            getSettings()->streamlinkOptsAds);
+        groupLayout->setWidget(6, QFormLayout::SpanningRole, optionAdsCb);
+
         groupLayout->addRow(
             "Additional options:",
             this->createLineEdit(getSettings()->streamlinkOpts));
@@ -74,6 +89,42 @@ ExternalToolsPage::ExternalToolsPage()
                 customPath->setEnabled(value);
             },
             this->managedConnections_);
+    }
+    layout->addSpacing(16);
+
+    {
+        auto group = layout.emplace<QGroupBox>("VLC Attached Player");
+        auto groupLayout = group.setLayoutType<QFormLayout>();
+
+        auto description =
+            new QLabel("If enabled VLC will be embedded in an attached player "
+                       "window alongside Streamlink."
+                       "The stream can auto follow the active split tab being "
+                       "watched and chatted in. The stream volume can be "
+                       "controlled with your scroll wheel.");
+        description->setWordWrap(true);
+        description->setStyleSheet("color: #bbb");
+
+        auto links = new QLabel(
+            formatRichNamedLink("https://www.videolan.org/", "Website"));
+        links->setTextFormat(Qt::RichText);
+        links->setTextInteractionFlags(Qt::TextBrowserInteraction |
+                                       Qt::LinksAccessibleByKeyboard |
+                                       Qt::LinksAccessibleByMouse);
+        links->setOpenExternalLinks(true);
+
+        groupLayout->setWidget(0, QFormLayout::SpanningRole, description);
+        groupLayout->setWidget(1, QFormLayout::SpanningRole, links);
+
+        auto followActiveCb = this->createCheckBox(
+            "Follow active chat (will automatically switch "
+            "player stream based on what chat you are in)",
+            getSettings()->vlcFollowActive);
+        groupLayout->setWidget(2, QFormLayout::SpanningRole, followActiveCb);
+        auto customPath = this->createLineEdit(getSettings()->vlcPlayerPath);
+        customPath->setPlaceholderText(
+            "Path to folder where VLC executable can be found");
+        groupLayout->addRow("VLC path:", customPath);
     }
     layout->addSpacing(16);
 

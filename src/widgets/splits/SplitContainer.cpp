@@ -300,6 +300,12 @@ void SplitContainer::setSelected(Split *split)
         this->focusSplitRecursive(node);
         this->setPreferedTargetRecursive(node);
     }
+
+    // switch the attached window if it is being shown
+    if (getSettings()->vlcFollowActive)
+    {
+        split->openInStreamlinkVLCIfOpen();
+    }
 }
 
 void SplitContainer::setPreferedTargetRecursive(Node *node)

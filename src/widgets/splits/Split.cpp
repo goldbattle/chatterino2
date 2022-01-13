@@ -933,6 +933,43 @@ void Split::openInStreamlink()
     this->openChannelInStreamlink(this->getChannel()->getName());
 }
 
+void Split::openInStreamlinkVLCIfOpen()
+{
+    // Return if the stream is not open currently
+    if (!AttachedPlayer::getInstance().getIfStreamActive() ||
+        !this->getChannel()->isLive())
+    {
+        return;
+    }
+
+    // Else try to open
+    try
+    {
+        QString channel = this->getChannel()->getName();
+        openStreamlinkForChannel(channel, true);
+    }
+    catch (const Exception &ex)
+    {
+        qCWarning(chatterinoWidget)
+            << "Error in openInStreamlinkVLCIfOpen:" << ex.what();
+    }
+}
+
+void Split::openInStreamlinkVLC()
+{
+    try
+    {
+        // This will open our streamlink in our new attached window
+        QString channel = this->getChannel()->getName();
+        openStreamlinkForChannel(channel, true);
+    }
+    catch (const Exception &ex)
+    {
+        qCWarning(chatterinoWidget)
+            << "Error in doOpenStreamlink:" << ex.what();
+    }
+}
+
 void Split::openWithCustomScheme()
 {
     QString scheme = getSettings()->customURIScheme.getValue();

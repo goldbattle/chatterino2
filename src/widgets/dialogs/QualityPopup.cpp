@@ -7,10 +7,13 @@
 
 namespace chatterino {
 
-QualityPopup::QualityPopup(const QString &channelURL, QStringList options)
+QualityPopup::QualityPopup(const QString &channelURL, QStringList options,
+                           QStringList extraArguments, bool streamVLC)
     : BasePopup({},
                 static_cast<QWidget *>(&(getApp()->windows->getMainWindow())))
     , channelURL_(channelURL)
+    , extraArguments_(extraArguments)
+    , streamVLC_(streamVLC)
 {
     this->ui_.selector = new QComboBox(this);
     this->ui_.vbox = new QVBoxLayout(this);
@@ -30,9 +33,11 @@ QualityPopup::QualityPopup(const QString &channelURL, QStringList options)
     this->setLayout(this->ui_.vbox);
 }
 
-void QualityPopup::showDialog(const QString &channelURL, QStringList options)
+void QualityPopup::showDialog(const QString &channelURL, QStringList options,
+                              QStringList extraArguments, bool streamVLC)
 {
-    QualityPopup *instance = new QualityPopup(channelURL, options);
+    QualityPopup *instance =
+        new QualityPopup(channelURL, options, extraArguments, streamVLC);
 
     instance->window()->setWindowTitle("Chatterino - select stream quality");
     instance->setAttribute(Qt::WA_DeleteOnClose, true);
@@ -60,7 +65,8 @@ void QualityPopup::okButtonClicked()
 {
     try
     {
-        openStreamlink(this->channelURL_, this->ui_.selector->currentText());
+        openStreamlink(this->channelURL_, this->ui_.selector->currentText(),
+                       this->extraArguments_, this->streamVLC_);
     }
     catch (const Exception &ex)
     {

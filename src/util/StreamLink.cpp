@@ -27,16 +27,33 @@ namespace {
 #endif
     }
 
-    const char *getDefaultBinaryPath()
+    const char *getBinaryNameVLC()
     {
 #ifdef _WIN32
-        return "C:\\Program Files (x86)\\Streamlink\\bin\\streamlink.exe";
+        return "vlc.exe";
 #else
-        return "/usr/bin/streamlink";
+        return "vlc";
 #endif
     }
 
-    bool checkStreamlinkPath(const QString &path)
+    QString getStreamlinkProgram()
+    {
+        if (getSettings()->streamlinkUseCustomPath)
+        {
+            return getSettings()->streamlinkPath + "/" + getBinaryName();
+        }
+        else
+        {
+            return getBinaryName();
+        }
+    }
+
+    QString getVLCProgram()
+    {
+        return getSettings()->vlcPlayerPath + "/" + getBinaryNameVLC();
+    }
+
+    bool checkExecutablePath(const QString &path)
     {
         QFileInfo fileinfo(path);
 
@@ -67,6 +84,15 @@ namespace {
                 "Unable to find Streamlink executable.\nIf you have Streamlink "
                 "installed, you might need to enable the custom path option");
         }
+    }
+
+    void showVLCNotFoundError()
+    {
+        static QErrorMessage *msg = new QErrorMessage;
+        msg->setWindowTitle("Chatterino - VLC player not found");
+        msg->showMessage("Unable to find VLC player executable\nMake sure "
+                         "your path is pointing to the DIRECTORY "
+                         "where the VLC player executable is located");
     }
 
     QProcess *createStreamlinkProcess()
@@ -181,7 +207,7 @@ void getStreamQualities(const QString &channelURL,
 }
 
 void openStreamlink(const QString &channelURL, const QString &quality,
-                    QStringList extraArguments)
+                    QStringList extraArguments, bool streamVLC)
 {
     auto proc = createStreamlinkProcess();
     auto arguments = proc->arguments()
@@ -194,38 +220,99 @@ void openStreamlink(const QString &channelURL, const QString &quality,
     QString additionalOptions = getSettings()->streamlinkOpts.getValue();
     arguments << splitCommand(additionalOptions);
 
-    proc->setArguments(std::move(arguments));
-    bool res = proc->startDetached();
-
-    if (!res)
+    // If we are not doing our VLC video view start as detached
+    // Else we will kill our existing stream proccess and start a new stream
+    if (!streamVLC)
     {
-        showStreamlinkNotFoundError();
+        proc->setArguments(std::move(arguments));
+        bool res = proc->startDetached();
+        if (!res)
+        {
+            showStreamlinkNotFoundError();
+        }
+    }
+    else
+    {
+        // TODO: use the createStreamlinkProcess() here also...
+        // TODO: right now we just kill the created process...
+        proc->terminate();
+        QString command =
+            "\"" + getStreamlinkProgram() + "\" " + arguments.join(" ");
+        AttachedPlayer::getInstance().updateStreamLinkProcess(channelURL,
+                                                              quality, command);
     }
 }
 
-void openStreamlinkForChannel(const QString &channel)
+void openStreamlinkForChannel(const QString &channel, bool streamVLC)
 {
     QString channelURL = "twitch.tv/" + channel;
 
-    QString preferredQuality = getSettings()->preferredQuality.getValue();
-    preferredQuality = preferredQuality.toLower();
+    QStringList args;
 
-    if (preferredQuality == "choose")
+    // First check to see if player is valid path!
+    if (streamVLC && !checkExecutablePath(getVLCProgram()))
     {
-        getStreamQualities(channelURL, [=](QStringList qualityOptions) {
-            QualityPopup::showDialog(channelURL, qualityOptions);
-        });
-
+        showVLCNotFoundError();
+        return;
+    }
+    if (!checkExecutablePath(getStreamlinkProgram()))
+    {
+        showStreamlinkNotFoundError();
         return;
     }
 
-    QStringList args;
+    // Append VLC player settings if we have a container to play in
+    // https://wiki.videolan.org/VLC_command-line_help/
+    if (streamVLC)
+    {
+        args
+            << "--player \"" + getVLCProgram() +
+                   " --play-and-exit -I dummy --no-embedded-video "
+                   "--qt-notification=0 --qt-auto-raise=0 --qt-start-minimized "
+                   "--no-qt-name-in-title --no-video-title-show "
+                   "--drawable-hwnd=WID\"";
+    }
+
+    // Append any extra options to to our stream link command
+    // NOTE: it is important to append this before we ask for the quality
+    if (getSettings()->streamlinkOptsLatency)
+    {
+        args << "--twitch-low-latency";
+    }
+    if (getSettings()->streamlinkOptsAds)
+    {
+        args << "--twitch-disable-ads";
+    }
 
     // Quality converted from Chatterino format to Streamlink format
     QString quality;
     // Streamlink qualities to exclude
     QString exclude;
 
+    // Check to see if we should ask the user for a quality setting
+    // NOTE: if we are using the VLC player, then we should only ask the first time
+    // NOTE: afterwards we should just use the last requested quality or a near one
+    QString preferredQuality = getSettings()->preferredQuality.getValue();
+    preferredQuality = preferredQuality.toLower();
+    if (preferredQuality == "choose" && streamVLC &&
+        AttachedPlayer::getInstance().getLastQualitySetting() != "")
+    {
+        args << "--stream-sorting-excludes"
+             << ">" + AttachedPlayer::getInstance().getLastQualitySetting();
+        quality = "best";
+        openStreamlink(channelURL, quality, args, streamVLC);
+        return;
+    }
+    if (preferredQuality == "choose")
+    {
+        getStreamQualities(channelURL, [=](QStringList qualityOptions) {
+            QualityPopup::showDialog(channelURL, qualityOptions, args,
+                                     streamVLC);
+        });
+        return;
+    }
+
+    // Else we can set the default
     if (preferredQuality == "high")
     {
         exclude = ">720p30";
@@ -254,7 +341,7 @@ void openStreamlinkForChannel(const QString &channel)
         args << "--stream-sorting-excludes" << exclude;
     }
 
-    openStreamlink(channelURL, quality, args);
+    openStreamlink(channelURL, quality, args, streamVLC);
 }
 
 }  // namespace chatterino
