@@ -197,11 +197,9 @@ void SeventvEmotes::loadChannel(std::weak_ptr<Channel> channel,
             auto shared = channel.lock();
             if (!shared)
                 return;
-            if (result.status() == 400)
+            if (result.status() == 404)
             {
-                qCWarning(chatterinoSeventv)
-                    << "Error occured fetching 7TV emotes: "
-                    << result.parseJson();
+                // User does not have any 7TV emotes
                 if (manualRefresh)
                     shared->addMessage(
                         makeSystemMessage(CHANNEL_HAS_NO_EMOTES));
