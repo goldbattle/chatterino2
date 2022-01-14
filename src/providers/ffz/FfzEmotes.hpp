@@ -14,6 +14,9 @@ class EmoteMap;
 
 class FfzEmotes final
 {
+    static constexpr const char *globalEmoteApiUrl =
+        "https://api.frankerfacez.com/v1/set/global";
+
 public:
     FfzEmotes();
 
