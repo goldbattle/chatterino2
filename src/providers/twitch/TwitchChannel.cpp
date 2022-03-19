@@ -16,7 +16,6 @@
 #include "providers/twitch/TwitchCommon.hpp"
 #include "providers/twitch/TwitchMessageBuilder.hpp"
 #include "providers/twitch/api/Helix.hpp"
-#include "providers/twitch/api/Kraken.hpp"
 #include "singletons/Emotes.hpp"
 #include "singletons/Settings.hpp"
 #include "singletons/Toasts.hpp"
@@ -107,9 +106,11 @@ namespace {
 
         for (const auto jsonMessage : jsonMessages)
         {
-            auto content = jsonMessage.toString().toUtf8();
+            auto content = jsonMessage.toString();
+            content.replace(COMBINED_FIXER, ZERO_WIDTH_JOINER);
 
-            auto message = Communi::IrcMessage::fromData(content, nullptr);
+            auto message =
+                Communi::IrcMessage::fromData(content.toUtf8(), nullptr);
 
             if (message->command() == "CLEARCHAT")
             {
@@ -380,6 +381,10 @@ void TwitchChannel::sendMessage(const QString &message)
     // Do last message processing
     QString parsedMessage = app->emotes->emojis.replaceShortCodes(message);
 
+    // This is to make sure that combined emoji go through properly, see
+    // https://github.com/Chatterino/chatterino2/issues/3384 and
+    // https://mm2pl.github.io/emoji_rfc.pdf for more details
+    parsedMessage.replace(ZERO_WIDTH_JOINER, ESCAPE_TAG);
     parsedMessage = parsedMessage.simplified();
 
     if (parsedMessage.isEmpty())
