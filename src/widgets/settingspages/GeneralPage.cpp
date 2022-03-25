@@ -321,7 +321,7 @@ void GeneralPage::initLayout(GeneralPageView &layout)
                        s.showUnlistedEmotes);
     s.showUnlistedEmotes.connect(
         []() {
-            getApp()->twitch.server->forEachChannelAndSpecialChannels(
+            getApp()->twitch->server->forEachChannelAndSpecialChannels(
                 [](const auto &c) {
                     if (c->isTwitchChannel())
                     {
